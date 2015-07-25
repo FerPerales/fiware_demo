@@ -7,9 +7,13 @@ class ChairController < ApplicationController
   end
 
   def update
-    @chair = Chair.find(chair_params['id']) || Chair.new
-    @chair.status = status_value
-    if @chair.save
+    begin
+      @chair = Chair.find(chair_params['id'])
+    rescue Exception
+      @chair = Chair.new
+    end
+
+    if @chair.update_attribute :status, status_value
       message = @chair.status ? 'Seat taken' : 'A new seat is available'
       redirect_to :root, flash: { message: message }
     else
